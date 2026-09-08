@@ -1,0 +1,824 @@
+/* ============================================================
+   ГАЗ АВТОПРОФИ — Самара. Установка ГБО.
+   Правила, которых держимся:
+     * ноль обращений к чужим серверам — шрифты и картинки свои;
+     * ничего в <head> не блокирует отрисовку;
+     * контраст текста к фону не ниже 4,5:1;
+     * всё, что кликается, имеет видимый фокус с клавиатуры.
+   ============================================================ */
+
+:root{
+  --fon:#0C0F14;            /* основной тёмный */
+  --fon2:#131924;           /* карточки */
+  --fon3:#1B2331;           /* обводки, разделители */
+  --svet:#F4F7FB;           /* белый текст */
+  --tuskl:#9DA9BA;          /* приглушённый текст */
+  --sin:#1B8DE0;            /* фирменный синий из логотипа */
+  --sin-t:#0E6FBB;          /* тёмный синий для нажатия */
+  --zhelt:#FFD200;          /* жёлтый акцент */
+  --zelen:#25C16F;          /* «экономия», галочки */
+  --krasn:#E5484D;
+
+  --pole:clamp(16px, 4vw, 48px);   /* боковые поля */
+  --shirina:1280px;
+  --radius:16px;
+  --radius-s:10px;
+
+  --tenj:0 18px 50px rgba(0,0,0,.45);
+  --shrift:"Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --shrift-zag:"Unbounded", var(--shrift);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+
+body{
+  margin:0;
+  background:var(--fon);
+  color:var(--svet);
+  font-family:var(--shrift);
+  font-size:17px;
+  line-height:1.6;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+img,svg,video{max-width:100%;height:auto;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+
+:focus-visible{
+  outline:3px solid var(--zhelt);
+  outline-offset:3px;
+  border-radius:4px;
+}
+
+h1,h2,h3,h4{
+  font-family:var(--shrift-zag);
+  font-weight:800;
+  line-height:1.08;
+  letter-spacing:-.02em;
+  margin:0 0 .5em;
+  text-wrap:balance;
+}
+h1{font-size:clamp(32px, 5.4vw, 66px)}
+h2{font-size:clamp(26px, 3.6vw, 44px)}
+h3{font-size:clamp(19px, 1.6vw, 23px);font-weight:700}
+p{margin:0 0 1em}
+
+.obolochka{
+  width:100%;
+  max-width:var(--shirina);
+  margin-inline:auto;
+  padding-inline:var(--pole);
+}
+
+section{padding-block:clamp(56px, 7vw, 104px)}
+
+.nadzag{
+  font-family:var(--shrift);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--sin);
+  margin:0 0 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nadzag::before{
+  content:"";
+  width:30px;height:2px;
+  background:var(--sin);
+  flex:none;
+}
+
+.lid{
+  font-size:clamp(17px, 1.5vw, 20px);
+  color:var(--tuskl);
+  max-width:62ch;
+}
+
+/* ---------- кнопки ---------------------------------------------------- */
+
+.knopka{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:16px 30px;
+  border:none;
+  border-radius:var(--radius-s);
+  background:var(--sin);
+  color:#fff;
+  font-weight:600;
+  font-size:16px;
+  text-decoration:none;
+  cursor:pointer;
+  transition:background .18s ease, transform .18s ease, box-shadow .18s ease;
+  text-align:center;
+}
+.knopka:hover{background:var(--sin-t);transform:translateY(-2px);box-shadow:0 10px 26px rgba(27,141,224,.32)}
+.knopka:active{transform:translateY(0)}
+
+.knopka--zhelt{background:var(--zhelt);color:#14181F}
+.knopka--zhelt:hover{background:#EDC400;box-shadow:0 10px 26px rgba(255,210,0,.3)}
+
+.knopka--prizrak{
+  background:transparent;
+  color:var(--svet);
+  border:1.5px solid rgba(244,247,251,.28);
+}
+.knopka--prizrak:hover{background:rgba(244,247,251,.08);border-color:rgba(244,247,251,.5);box-shadow:none}
+
+.knopka--shirokaya{width:100%}
+
+/* Бегущая обводка — приём с сайта конкурента, три строки на градиенте.
+   Маска xor оставляет от градиента только рамку в 2 пикселя. */
+.obvodka{position:relative;isolation:isolate}
+.obvodka::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:calc(var(--radius-s) + 2px);
+  padding:2px;
+  background:conic-gradient(from var(--ugol), transparent 0 62%, var(--zhelt) 78%, #fff 88%, transparent 96%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  animation:begomobvodka 4s linear infinite;
+  pointer-events:none;
+}
+@property --ugol{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes begomobvodka{to{--ugol:360deg}}
+
+/* ---------- шапка ------------------------------------------------------ */
+
+.verh{
+  background:#080B0F;
+  border-bottom:1px solid var(--fon3);
+  font-size:14px;
+  color:var(--tuskl);
+}
+.verh__ryad{
+  display:flex;
+  align-items:center;
+  gap:22px;
+  flex-wrap:wrap;
+  padding-block:9px;
+}
+.verh__punkt{display:flex;align-items:center;gap:8px}
+.verh__punkt svg{width:15px;height:15px;flex:none;color:var(--sin)}
+.verh__tel{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}
+.verh__tel a{color:var(--svet);font-weight:600;text-decoration:none;white-space:nowrap}
+.verh__tel a:hover{color:var(--sin)}
+
+.shapka{
+  position:sticky;
+  top:0;
+  z-index:60;
+  background:rgba(12,15,20,.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--fon3);
+}
+.shapka__ryad{
+  display:flex;
+  align-items:center;
+  gap:22px;
+  min-height:74px;
+}
+.logo{
+  display:block;
+  background:#fff;
+  border-radius:8px;
+  padding:6px 10px;
+  flex:none;
+  line-height:0;
+}
+.logo img{width:168px;height:auto}
+
+.menu{display:flex;gap:6px;margin-left:8px}
+.menu a{
+  padding:9px 14px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:500;
+  font-size:15px;
+  color:var(--tuskl);
+  transition:color .16s, background .16s;
+  white-space:nowrap;
+}
+.menu a:hover{color:var(--svet);background:rgba(244,247,251,.07)}
+.menu a[aria-current="page"]{color:var(--svet);background:rgba(27,141,224,.16)}
+
+.shapka__knopki{margin-left:auto;display:flex;gap:10px;align-items:center}
+.shapka__knopki .knopka{padding:12px 22px;font-size:15px}
+
+.burger{
+  display:none;
+  width:46px;height:46px;
+  border:1px solid var(--fon3);
+  border-radius:10px;
+  background:transparent;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:5px;
+  margin-left:auto;
+}
+.burger span{display:block;width:20px;height:2px;background:var(--svet);transition:.2s}
+.burger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+@media (max-width:1080px){
+  .menu{
+    position:absolute;
+    inset:100% 0 auto;
+    flex-direction:column;
+    gap:0;
+    background:#0B0E13;
+    border-bottom:1px solid var(--fon3);
+    padding:10px var(--pole) 18px;
+    display:none;
+  }
+  .menu.otkryto{display:flex}
+  .menu a{padding:14px 12px;font-size:17px;border-radius:10px}
+  .shapka__knopki{display:none}
+  .burger{display:flex}
+}
+@media (max-width:640px){
+  .verh__ryad{font-size:13px;gap:14px}
+  .verh__punkt--adres{width:100%}
+  .logo img{width:132px}
+}
+
+/* ---------- герой ------------------------------------------------------ */
+
+.geroy{
+  position:relative;
+  min-height:clamp(520px, 74vh, 720px);
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  padding-block:clamp(48px, 8vw, 90px);
+}
+.geroy__fon{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+.geroy__fon img{width:100%;height:100%;object-fit:cover;object-position:center 62%}
+.geroy__fon::after{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(100deg, rgba(8,11,15,.96) 0%, rgba(8,11,15,.86) 38%, rgba(8,11,15,.42) 66%, rgba(8,11,15,.7) 100%),
+    linear-gradient(to bottom, rgba(8,11,15,.5), rgba(12,15,20,1) 97%);
+}
+.geroy__soderzhimoe{position:relative;z-index:1;max-width:880px}
+.geroy__soderzhimoe h1{max-width:12ch}
+.geroy h1{margin-bottom:20px}
+.geroy h1 span{color:var(--sin);display:block}
+.geroy__lid{font-size:clamp(17px, 1.7vw, 20px);color:#C9D3E0;max-width:52ch;margin-bottom:28px}
+.geroy__knopki{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+
+/* Четыре цифры держим в одном ряду: если «0 %» уезжает на вторую строку,
+   ряд рассыпается и читается как две разные группы. */
+.geroy__cifry{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, auto));
+  justify-content:start;
+  gap:clamp(16px, 3vw, 40px);
+  padding-top:26px;
+  border-top:1px solid rgba(244,247,251,.16);
+}
+@media (max-width:760px){
+  .geroy__cifry{grid-template-columns:repeat(2, minmax(0, 1fr));gap:22px}
+}
+.geroy__cifra b{
+  display:block;
+  font-family:var(--shrift-zag);
+  font-size:clamp(23px, 2.5vw, 33px);
+  font-weight:800;
+  line-height:1;
+  color:var(--svet);
+  white-space:nowrap;
+}
+.geroy__cifra span{font-size:13.5px;color:var(--tuskl);display:block;margin-top:7px;max-width:16ch;line-height:1.35}
+
+/* ---------- полоса преимуществ ---------------------------------------- */
+
+.polosa{
+  background:var(--fon2);
+  border-block:1px solid var(--fon3);
+  padding-block:clamp(28px, 3vw, 40px);
+}
+.polosa__setka{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+  gap:clamp(18px, 2.4vw, 34px);
+}
+.polosa__punkt{display:flex;gap:14px;align-items:flex-start}
+.polosa__punkt svg{width:26px;height:26px;flex:none;color:var(--sin);margin-top:3px}
+.polosa__punkt b{display:block;font-weight:600;font-size:16px;margin-bottom:3px}
+.polosa__punkt span{font-size:14.5px;color:var(--tuskl);line-height:1.45}
+
+/* ---------- калькулятор ------------------------------------------------ */
+
+.kalk{
+  background:linear-gradient(160deg, #142033, var(--fon2) 62%);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius);
+  padding:clamp(22px, 3vw, 40px);
+  box-shadow:var(--tenj);
+}
+.kalk__setka{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px, 4vw, 52px);align-items:center}
+@media (max-width:900px){.kalk__setka{grid-template-columns:1fr}}
+
+.pole{margin-bottom:20px}
+.pole label{display:block;font-size:14.5px;color:var(--tuskl);margin-bottom:9px;font-weight:500}
+.pole__znach{
+  font-family:var(--shrift-zag);
+  font-weight:700;
+  font-size:20px;
+  color:var(--svet);
+  float:right;
+}
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:6px;
+  border-radius:99px;
+  background:linear-gradient(to right, var(--sin) var(--zapoln,50%), var(--fon3) var(--zapoln,50%));
+  outline:none;
+  cursor:pointer;
+  margin:0;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:24px;height:24px;border-radius:50%;
+  background:#fff;border:5px solid var(--sin);
+  cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);
+}
+input[type="range"]::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;
+  background:#fff;border:5px solid var(--sin);
+  cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);
+}
+
+.itog{
+  background:var(--fon);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius-s);
+  padding:clamp(20px, 2.6vw, 30px);
+}
+.itog__stroka{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:16px;
+  padding-block:13px;
+  border-bottom:1px solid var(--fon3);
+}
+.itog__stroka:last-of-type{border-bottom:none}
+.itog__stroka span{color:var(--tuskl);font-size:15px}
+.itog__stroka b{font-family:var(--shrift-zag);font-weight:700;font-size:clamp(19px,2vw,24px);white-space:nowrap}
+.itog__glavnoe b{color:var(--zelen);font-size:clamp(24px,2.8vw,34px)}
+.itog__snoska{font-size:13px;color:var(--tuskl);margin:14px 0 0;line-height:1.5}
+
+/* ---------- цены ------------------------------------------------------- */
+
+.ceny{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+  gap:clamp(16px, 2vw, 24px);
+}
+.cena{
+  background:var(--fon2);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius);
+  padding:26px 24px 24px;
+  display:flex;
+  flex-direction:column;
+  transition:border-color .2s, transform .2s;
+}
+.cena:hover{border-color:rgba(27,141,224,.55);transform:translateY(-4px)}
+.cena__vid{font-size:14px;color:var(--sin);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+/* Высота заголовка задана, чтобы цены в четырёх карточках стояли на одной
+   линии: без этого «ГБО на коммерческий транспорт» в три строки сдвигает
+   свою цену вниз, и ряд выглядит сломанным. */
+.cena h3{margin-bottom:16px;font-size:19px;min-height:2.3em;hyphens:none}
+.cena__summa{
+  font-family:var(--shrift-zag);
+  font-weight:800;
+  font-size:clamp(28px, 3vw, 36px);
+  line-height:1;
+  margin-bottom:6px;
+}
+.cena__summa small{font-family:var(--shrift);font-size:15px;font-weight:500;color:var(--tuskl);display:block;margin-bottom:6px}
+.cena__marki{
+  list-style:none;
+  margin:18px 0 22px;
+  padding:0;
+  font-size:15px;
+  color:var(--tuskl);
+  flex:1;
+}
+.cena__marki li{padding:5px 0 5px 22px;position:relative}
+.cena__marki li::before{
+  content:"";
+  position:absolute;left:0;top:12px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--fon3);
+}
+.cena .knopka{width:100%}
+
+.dop{
+  margin-top:clamp(28px, 3vw, 44px);
+  background:var(--fon2);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.dop h3{padding:22px 24px 6px;margin:0}
+.dop table{width:100%;border-collapse:collapse;font-size:16px}
+.dop td{padding:14px 24px;border-top:1px solid var(--fon3)}
+.dop td:last-child{text-align:right;font-weight:600;white-space:nowrap;font-family:var(--shrift-zag)}
+.dop tr:hover td{background:rgba(244,247,251,.03)}
+
+/* ---------- шаги ------------------------------------------------------- */
+
+.shagi{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+  gap:clamp(18px, 2vw, 26px);
+  counter-reset:shag;
+}
+.shag{
+  background:var(--fon2);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius);
+  padding:26px 24px;
+  position:relative;
+  counter-increment:shag;
+}
+.shag::before{
+  content:counter(shag);
+  font-family:var(--shrift-zag);
+  font-weight:800;
+  font-size:52px;
+  line-height:1;
+  color:rgba(27,141,224,.24);
+  display:block;
+  margin-bottom:10px;
+}
+.shag h3{font-size:18px;margin-bottom:8px}
+.shag p{color:var(--tuskl);font-size:15.5px;margin:0}
+
+/* ---------- работы ----------------------------------------------------- */
+
+.raboty{
+  display:grid;
+  /* 320 вместо 260: при четырёх колонках машина в кадре выходила мелкой,
+     а подпись занимала треть плитки. */
+  grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+  gap:clamp(14px, 1.6vw, 20px);
+}
+.rabota{
+  position:relative;
+  border-radius:var(--radius);
+  overflow:hidden;
+  background:var(--fon2);
+  border:1px solid var(--fon3);
+  aspect-ratio:4/3;
+}
+.rabota img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.rabota:hover img{transform:scale(1.05)}
+/* Подпись лежит на фотографии, а машины бывают белые — поэтому подложка
+   плотная и высокая, иначе текст пропадает на светлом кузове. */
+.rabota figcaption{
+  position:absolute;
+  inset:auto 0 0;
+  padding:46px 20px 17px;
+  background:linear-gradient(to top, rgba(6,9,13,.97) 0%, rgba(6,9,13,.88) 42%, rgba(6,9,13,.55) 72%, transparent 100%);
+  font-size:16px;
+  font-weight:600;
+  line-height:1.25;
+}
+.rabota figcaption span{display:block;font-size:13px;font-weight:400;color:#B9C4D2;margin-top:4px;line-height:1.35}
+
+/* ---------- оборудование ----------------------------------------------- */
+
+.marki{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:14px;
+}
+.marka{
+  background:var(--fon2);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius-s);
+  padding:22px 16px;
+  text-align:center;
+  font-family:var(--shrift-zag);
+  font-weight:700;
+  font-size:17px;
+  letter-spacing:.02em;
+  transition:border-color .2s, color .2s;
+}
+.marka:hover{border-color:rgba(27,141,224,.5);color:var(--sin)}
+.marka span{display:block;font-family:var(--shrift);font-weight:400;font-size:13px;color:var(--tuskl);margin-top:5px;letter-spacing:0}
+
+/* ---------- два столбца (текст + фото) --------------------------------- */
+
+.dvoyka{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(28px, 4vw, 64px);
+  align-items:center;
+}
+@media (max-width:880px){.dvoyka{grid-template-columns:1fr}}
+.dvoyka__foto{border-radius:var(--radius);overflow:hidden;border:1px solid var(--fon3)}
+.dvoyka__foto img{width:100%}
+
+.spisok{list-style:none;padding:0;margin:22px 0 0}
+.spisok li{padding:9px 0 9px 32px;position:relative;color:var(--tuskl)}
+.spisok li::before{
+  content:"";
+  position:absolute;left:0;top:15px;
+  width:16px;height:9px;
+  border-left:2.5px solid var(--zelen);
+  border-bottom:2.5px solid var(--zelen);
+  transform:rotate(-45deg);
+}
+.spisok b{color:var(--svet);font-weight:600}
+
+/* ---------- вопросы ---------------------------------------------------- */
+
+.vopros{
+  border:1px solid var(--fon3);
+  border-radius:var(--radius-s);
+  background:var(--fon2);
+  margin-bottom:12px;
+  overflow:hidden;
+}
+.vopros summary{
+  padding:20px 56px 20px 24px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:17px;
+  list-style:none;
+  position:relative;
+  transition:color .16s;
+}
+.vopros summary::-webkit-details-marker{display:none}
+.vopros summary:hover{color:var(--sin)}
+.vopros summary::after{
+  content:"";
+  position:absolute;right:24px;top:50%;
+  width:11px;height:11px;
+  border-right:2.5px solid var(--sin);
+  border-bottom:2.5px solid var(--sin);
+  transform:translateY(-70%) rotate(45deg);
+  transition:transform .22s;
+}
+.vopros[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.vopros__telo{padding:0 24px 22px;color:var(--tuskl)}
+.vopros__telo p:last-child{margin-bottom:0}
+
+/* ---------- форма ------------------------------------------------------ */
+
+.zayavka{
+  background:linear-gradient(150deg, #142033, var(--fon2) 70%);
+  border:1px solid var(--fon3);
+  border-radius:var(--radius);
+  padding:clamp(24px, 3.4vw, 46px);
+  box-shadow:var(--tenj);
+}
+.forma__ryad{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:620px){.forma__ryad{grid-template-columns:1fr}}
+
+.forma .pole{margin-bottom:16px}
+.forma input[type="text"],
+.forma input[type="tel"],
+.forma select,
+.forma textarea{
+  width:100%;
+  padding:14px 16px;
+  background:var(--fon);
+  border:1.5px solid var(--fon3);
+  border-radius:var(--radius-s);
+  color:var(--svet);
+  font-family:inherit;
+  font-size:16px;
+  transition:border-color .16s;
+}
+.forma input:focus,
+.forma select:focus,
+.forma textarea:focus{border-color:var(--sin);outline:none}
+.forma input::placeholder,.forma textarea::placeholder{color:#657182}
+.forma textarea{min-height:96px;resize:vertical}
+.forma select{cursor:pointer}
+.forma select option{background:var(--fon2)}
+
+.soglasie{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  font-size:14px;
+  color:var(--tuskl);
+  line-height:1.5;
+  margin:6px 0 20px;
+  cursor:pointer;
+}
+.soglasie input{
+  width:20px;height:20px;
+  margin:2px 0 0;
+  flex:none;
+  accent-color:var(--sin);
+  cursor:pointer;
+}
+.soglasie a{color:var(--sin)}
+
+.forma__knopki{display:flex;gap:12px;flex-wrap:wrap}
+.forma__knopki .knopka{flex:1 1 200px}
+.forma__status{
+  margin:14px 0 0;
+  font-size:15px;
+  min-height:22px;
+  font-weight:500;
+}
+.forma__status.horosho{color:var(--zelen)}
+.forma__status.ploho{color:var(--krasn)}
+
+/* ---------- призыв ------------------------------------------------------ */
+
+.prizyv{
+  background:linear-gradient(120deg, var(--sin) 0%, #0B5C9E 100%);
+  border-radius:var(--radius);
+  padding:clamp(28px, 4vw, 54px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:26px;
+  flex-wrap:wrap;
+}
+.prizyv h2{margin:0 0 6px;color:#fff}
+.prizyv p{margin:0;color:rgba(255,255,255,.9)}
+.prizyv .knopka{background:#fff;color:#0B5C9E}
+.prizyv .knopka:hover{background:#EAF3FB;box-shadow:0 10px 26px rgba(0,0,0,.25)}
+
+/* ---------- подвал ------------------------------------------------------ */
+
+.podval{
+  background:#080B0F;
+  border-top:1px solid var(--fon3);
+  padding-block:clamp(40px, 5vw, 64px) 26px;
+  font-size:15px;
+}
+.podval__setka{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 1.4fr;
+  gap:clamp(26px, 4vw, 56px);
+  padding-bottom:34px;
+  border-bottom:1px solid var(--fon3);
+}
+@media (max-width:860px){.podval__setka{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.podval__setka{grid-template-columns:1fr}}
+.podval h4{
+  font-family:var(--shrift);
+  font-size:13px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--tuskl);
+  font-weight:600;
+  margin:0 0 16px;
+}
+.podval__logo{margin-bottom:18px;display:inline-block;background:#fff;border-radius:8px;padding:6px 10px;line-height:0}
+.podval__logo img{width:150px}
+.podval ul{list-style:none;margin:0;padding:0}
+.podval li{margin-bottom:11px;color:var(--tuskl)}
+.podval a{color:var(--tuskl);text-decoration:none;transition:color .16s}
+.podval a:hover{color:var(--sin)}
+.podval__tel a{color:var(--svet);font-weight:600;font-size:18px;font-family:var(--shrift-zag)}
+.podval__adres{display:flex;gap:9px;align-items:flex-start;margin-bottom:12px;color:var(--tuskl)}
+.podval__adres svg{width:15px;height:15px;flex:none;color:var(--sin);margin-top:5px}
+.podval__niz{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  padding-top:22px;
+  font-size:13.5px;
+  color:#6C7889;
+}
+.podval__niz a{color:#6C7889;text-decoration:underline}
+
+/* ---------- липкая панель на телефоне ---------------------------------- */
+
+.pribor{
+  position:fixed;
+  inset:auto 0 0;
+  z-index:70;
+  display:none;
+  gap:1px;
+  background:var(--fon3);
+  border-top:1px solid var(--fon3);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.pribor a{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  padding:11px 4px;
+  background:#0B0E13;
+  color:var(--svet);
+  text-decoration:none;
+  font-size:12px;
+  font-weight:500;
+}
+.pribor a svg{width:19px;height:19px}
+.pribor a.glavnaya{background:var(--sin);color:#fff}
+@media (max-width:760px){
+  .pribor{display:flex}
+  body{padding-bottom:64px}
+}
+
+/* ---------- появление при прокрутке ------------------------------------ */
+
+/* Класс js-gotov ставит САМ main.js, когда он загрузился и отработал.
+   Сделано нарочно: если скрипт не дойдёт до браузера (сбой сети, блокировщик),
+   класса не будет — и страница просто останется видимой целиком.
+   Ставить класс инлайном в <head> нельзя: тогда при сбое JS весь текст
+   навсегда останется прозрачным. */
+.js-gotov .voznik{opacity:0;transform:translateY(22px);transition:opacity .6s ease, transform .6s ease}
+.js-gotov .voznik.vidno{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .js-gotov .voznik{opacity:1;transform:none}
+}
+
+/* ---------- мелочи ------------------------------------------------------ */
+
+.tolko-dlya-chtenija{
+  position:absolute;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  white-space:nowrap;
+  border:0;
+}
+.propusk{
+  position:absolute;
+  left:-9999px;
+  top:8px;
+  z-index:100;
+  background:var(--zhelt);
+  color:#14181F;
+  padding:12px 20px;
+  border-radius:8px;
+  font-weight:600;
+  text-decoration:none;
+}
+.propusk:focus{left:16px}
+
+.hleb{font-size:14px;color:var(--tuskl);padding-top:26px}
+.hleb a{color:var(--tuskl);text-decoration:none}
+.hleb a:hover{color:var(--sin)}
+
+.stranica-verh{
+  background:var(--fon2);
+  border-bottom:1px solid var(--fon3);
+  padding-block:clamp(34px, 4vw, 60px);
+}
+.stranica-verh h1{margin-bottom:14px;font-size:clamp(28px, 4vw, 50px)}
+
+.tekst{max-width:76ch}
+.tekst h2{margin-top:1.6em}
+.tekst h3{margin-top:1.4em}
+.tekst p, .tekst li{color:var(--tuskl)}
+.tekst b, .tekst strong{color:var(--svet)}
+.tekst ul{padding-left:22px}
+.tekst li{margin-bottom:8px}
+
+/* Не даём словам ломаться по дефису там, где это выглядит опечаткой:
+   «ГБО 4-» на одной строке и «го поколения» на другой. */
+.nerazryv{white-space:nowrap}
+
+/* «Отправить в WhatsApp» ломалось на две строки и кнопка выглядела кривой. */
+.forma__knopki .knopka{white-space:nowrap;padding-inline:22px}
