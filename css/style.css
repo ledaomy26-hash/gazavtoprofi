@@ -822,3 +822,7 @@ input[type="range"]::-moz-range-thumb{
 
 /* «Отправить в WhatsApp» ломалось на две строки и кнопка выглядела кривой. */
 .forma__knopki .knopka{white-space:nowrap;padding-inline:22px}
+
+/* Где в колонках текст разной длины, центрирование разводит их по вертикали
+   и колонки выглядят несвязанными — там равняем по верху. */
+.dvoyka--verh{align-items:start}
