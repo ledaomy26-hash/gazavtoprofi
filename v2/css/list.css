@@ -1,0 +1,249 @@
+/* ==========================================================================
+   Дополнение к основному стилю для версии с листанием по экранам.
+   Основной стиль подключается первым (../css/style.css), здесь только то,
+   что нужно режиму «одна страница, листается этапами».
+   ========================================================================== */
+
+/* Разделы в этом режиме не задают отступы сами: высоту им отмеряет скрипт
+   раскладки. Свои padding-block оставляем как запас на случай, когда
+   листание выключено (телефон, тачпад, узкое окно) — тогда страница
+   работает обычной лентой и отступы нужны. */
+
+/* Раздел, рассчитанный ровно на один экран. Скрипт таким не режет
+   содержимое на ряды, а растягивает раздел на высоту окна целиком. */
+.ekran{
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+}
+.ekran > .obolochka{width:100%}
+
+/* Первый экран: под ним верхняя строка реквизитов и шапка, их высоту
+   вычитаем — иначе низ героя уезжает за край окна. */
+.geroy.ekran{
+  min-height:calc(100svh - var(--topbar-h, 0px));
+}
+
+/* Подсказка «листайте» на первом экране. Появляется, только когда листание
+   вообще включено — на телефоне и тачпаде она врала бы. */
+.podskazka{
+  position:absolute;
+  left:50%;
+  bottom:26px;
+  transform:translateX(-50%);
+  display:none;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--tuskl);
+  z-index:2;
+  pointer-events:none;
+}
+.podskazka svg{width:17px;height:17px;animation:kach 1.8s ease-in-out infinite}
+@keyframes kach{
+  0%,100%{transform:translateY(0);opacity:.55}
+  50%{transform:translateY(5px);opacity:1}
+}
+@media (min-width:1240px) and (pointer:fine){
+  .podskazka{display:flex}
+}
+@media (prefers-reduced-motion:reduce){
+  .podskazka{display:none}
+}
+
+/* Точки-указатели сбоку: на каком экране человек стоит. Ставит и двигает
+   их скрипт разметки страницы, здесь только вид. */
+.tochki{
+  position:fixed;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:55;
+  display:none;
+  flex-direction:column;
+  gap:11px;
+}
+@media (min-width:1240px) and (pointer:fine){
+  .tochki.est{display:flex}
+}
+.tochki button{
+  width:11px;height:11px;
+  padding:0;
+  border:1.5px solid rgba(244,247,251,.42);
+  border-radius:50%;
+  background:transparent;
+  cursor:pointer;
+  transition:background .2s, border-color .2s, transform .2s;
+}
+.tochki button:hover{border-color:var(--sin);transform:scale(1.25)}
+.tochki button[aria-current="true"]{
+  background:var(--sin);
+  border-color:var(--sin);
+  transform:scale(1.25);
+}
+
+/* Полоса хода вверху окна — сколько страницы пройдено. */
+.hod{
+  position:fixed;
+  inset:0 auto auto 0;
+  height:3px;
+  width:0;
+  background:linear-gradient(90deg, var(--sin), var(--zhelt));
+  z-index:80;
+  transition:width .25s ease;
+  pointer-events:none;
+}
+
+/* --- поправки под режим одной страницы --------------------------------- */
+
+/* Заголовки разделов на полноэкранной верстке чуть ниже: экран и так
+   заполнен, крупный заголовок оставлял мало места содержимому. */
+.ekran h2{font-size:clamp(24px, 3.1vw, 38px)}
+
+/* Прайс целиком на одном экране: карточки чуть плотнее. */
+.ekran .cena{padding:22px 20px 20px}
+.ekran .cena__marki{margin:14px 0 18px}
+.ekran .cena__summa{font-size:clamp(26px, 2.6vw, 32px)}
+
+/* Таблица дополнительных работ — тоже один экран. */
+.ekran .dop td{padding:11px 22px}
+
+/* Работы: девять плиток на экран не влезут, поэтому в этом режиме
+   показываем шесть, остальные — на второй экран раздела. Скрипт сам
+   разложит их по рядам, лишь бы ряд не резался границей. */
+.ekran--raboty .rabota{aspect-ratio:16/11}
+
+/* Калькулятор на экран: ползунки и итог рядом, без лишнего воздуха. */
+.ekran .kalk{padding:clamp(20px, 2.4vw, 32px)}
+.ekran .pole{margin-bottom:15px}
+.ekran .itog__stroka{padding-block:10px}
+
+/* Вопросы: в развёрнутом виде они выше экрана, поэтому в этом режиме
+   раскрыт только первый, остальные закрыты. */
+.voprosy{max-width:900px;margin-inline:auto}
+
+/* Подвал в режиме экранов — свой отдельный экран, без верхнего отступа:
+   его высоту тоже отмеряет скрипт. */
+@media (min-width:1240px) and (pointer:fine){
+  .podval{display:flex;align-items:center}
+  .podval > .obolochka{width:100%}
+}
+
+/* Когда листания нет (телефон, тачпад, узкое окно), .ekran не должен
+   растягивать короткие разделы на весь экран — иначе на телефоне
+   получаются пустые простыни. */
+@media (max-width:1239px), (pointer:coarse){
+  .ekran{min-height:0;display:block}
+  .geroy.ekran{min-height:clamp(520px, 74vh, 720px);display:flex}
+  .tochki, .hod{display:none}
+}
+
+/* ==========================================================================
+   Ужимание под экран.
+
+   Замеры 08.09.2026 показали: на 1440×900 калькулятор занимал два экрана,
+   на 1366×768 — ещё и герой, цены, работы, оборудование и заявка. Экран,
+   разрезанный пополам, — это ровно то, чего листание должно избегать:
+   человек видит половину калькулятора и не понимает, что это.
+
+   Поэтому в режиме листания вертикальный воздух режется. Ни один размер
+   шрифта в основном стиле не трогаем — правки живут только здесь и только
+   при включённом листании.
+   ========================================================================== */
+@media (min-width:1240px) and (pointer:fine){
+
+  /* Отступы разделов: скрипт всё равно отмеряет высоту сам, а лишние
+     100 px сверху и снизу отнимают место у содержимого. */
+  main > section{padding-block:clamp(36px, 4vw, 64px)}
+
+  /* Заголовок раздела и подводка — компактнее. */
+  .ekran .nadzag{margin-bottom:10px}
+  .ekran h2{margin-bottom:.35em}
+  .ekran .lid{font-size:17px;line-height:1.5}
+
+  /* --- калькулятор ----------------------------------------------------- */
+  .ekran .kalk{padding:clamp(18px, 2vw, 26px)}
+  .ekran .kalk__setka{gap:clamp(20px, 2.6vw, 34px)}
+  .ekran .pole{margin-bottom:13px}
+  .ekran .pole label{margin-bottom:6px;font-size:14px}
+  .ekran .pole__znach{font-size:18px}
+  .ekran .itog{padding:clamp(16px, 1.8vw, 22px)}
+  .ekran .itog__stroka{padding-block:8px}
+  .ekran .itog__stroka b{font-size:clamp(17px,1.7vw,21px)}
+  .ekran .itog__glavnoe b{font-size:clamp(21px,2.3vw,28px)}
+  .ekran .itog__snoska{margin-top:10px;font-size:12.5px}
+  .ekran .itog .knopka{margin-top:10px!important;padding-block:13px}
+
+  /* --- герой ------------------------------------------------------------ */
+  .geroy.ekran{padding-block:clamp(30px, 4vw, 56px)}
+  .geroy.ekran h1{margin-bottom:14px}
+  .geroy.ekran .geroy__lid{margin-bottom:22px;font-size:17px;line-height:1.5}
+  .geroy.ekran .geroy__knopki{margin-bottom:24px}
+  .geroy.ekran .geroy__cifry{padding-top:20px}
+
+  /* --- цены -------------------------------------------------------------- */
+  .ekran .cena{padding:20px 18px 18px}
+  .ekran .cena h3{margin-bottom:12px;font-size:17px}
+  .ekran .cena__vid{margin-bottom:8px;font-size:13px}
+  .ekran .cena__marki{margin:12px 0 16px;font-size:14px}
+  .ekran .cena__marki li{padding-block:3px}
+  .ekran .cena .knopka{padding-block:12px}
+
+  /* --- шаги, работы, оборудование --------------------------------------- */
+  .ekran .shag{padding:20px 20px}
+  .ekran .shag::before{font-size:42px;margin-bottom:6px}
+  .ekran .shag p{font-size:14.5px}
+  .ekran .marka{padding:16px 12px;font-size:16px}
+  .ekran .spisok li{padding-block:6px}
+
+  /* --- вопросы ----------------------------------------------------------- */
+  .ekran .vopros summary{padding:15px 52px 15px 20px;font-size:16px}
+  .ekran .vopros__telo{padding:0 20px 16px}
+
+  /* --- заявка ------------------------------------------------------------ */
+  .ekran .zayavka{padding:clamp(20px, 2.2vw, 30px)}
+  .ekran .forma .pole{margin-bottom:13px}
+  .ekran .forma input, .ekran .forma select{padding:11px 14px}
+  .ekran .soglasie{margin:4px 0 16px;font-size:13px}
+}
+
+/* Низкие окна (1366×768 и ноутбуки 14"): режем ещё сильнее. */
+@media (min-width:1240px) and (pointer:fine) and (max-height:820px){
+  main > section{padding-block:clamp(26px, 3vw, 44px)}
+  .ekran h2{font-size:clamp(22px, 2.6vw, 30px)}
+  .ekran .lid{font-size:16px;margin-bottom:16px!important}
+  .geroy.ekran h1{font-size:clamp(30px, 4.2vw, 46px)}
+  .geroy.ekran .geroy__cifra b{font-size:clamp(20px, 2vw, 26px)}
+  .ekran .kalk{padding:16px}
+  .ekran .pole{margin-bottom:10px}
+  .ekran .itog__stroka{padding-block:6px}
+  .ekran .itog__snoska{display:none}       /* сноска уходит: её место нужнее цифрам */
+  .ekran--raboty .rabota{aspect-ratio:16/10}
+  .ekran .cena__marki{margin:10px 0 12px}
+  .ekran .shag p{font-size:14px}
+  .ekran .polosa__punkt span{font-size:13.5px}
+}
+
+/* Фотографии в двух колонках: исходники разной формы (механик — широкая
+   полоса 1600×555, баллон — почти квадрат), и в колонке шириной с пол-экрана
+   широкая превращалась в тонкую ленту. Задаём колонке высоту и обрезаем
+   фотографию по ней — тогда обе смотрятся одинаково. */
+@media (min-width:1240px) and (pointer:fine){
+  .ekran .dvoyka__foto{height:min(58vh, 460px)}
+  .ekran .dvoyka__foto picture,
+  .ekran .dvoyka__foto img{width:100%;height:100%;object-fit:cover}
+
+  /* Вопросы в две колонки: одна колонка оставляла половину экрана пустой. */
+  .ekran .voprosy{
+    max-width:none;
+    columns:2;
+    column-gap:20px;
+  }
+  .ekran .voprosy .vopros{
+    break-inside:avoid;
+    -webkit-column-break-inside:avoid;
+    margin-bottom:14px;
+  }
+}
