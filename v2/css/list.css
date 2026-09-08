@@ -247,3 +247,16 @@
     margin-bottom:14px;
   }
 }
+
+/* Адрес в подвале — ссылка на карту. Подчёркивание точками, чтобы было
+   видно, что нажимается, но строка не выглядела как обычная ссылка меню. */
+.adres-ssylka{
+  color:var(--tuskl);
+  text-decoration:underline dotted rgba(157,169,186,.5);
+  text-underline-offset:3px;
+  transition:color .16s;
+}
+.adres-ssylka:hover{color:var(--sin);text-decoration-color:var(--sin)}
+
+/* Кнопка «Показать на карте» в подвале — компактная. */
+.knopka--karta{padding:10px 18px;font-size:14.5px;gap:8px}

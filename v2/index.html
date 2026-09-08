@@ -575,10 +575,22 @@
 
       <div>
         <h4>Контакты</h4>
+        <!-- Адреса сделаны ссылками на Яндекс.Карты: в этой версии нет
+             отдельной страницы контактов, и без них с сайта некуда нажать,
+             чтобы построить маршрут. -->
         <p class="podval__adres">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.4-7-11a7 7 0 1 1 14 0c0 4.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
-          <span>Самара, ул. Пятигорская, 13, корп. 2<br>
-          Тольятти, с. Тимофеевка, ул. Октябрьская, 148Е</span>
+          <span>
+            <a class="adres-ssylka" href="https://yandex.ru/maps/?text=Самара, улица Пятигорская, 13 корпус 2" target="_blank" rel="noopener">Самара, ул. Пятигорская, 13, корп. 2</a><br>
+            <a class="adres-ssylka" href="https://yandex.ru/maps/?text=Тольятти, Тимофеевка, улица Октябрьская, 148Е" target="_blank" rel="noopener">Тольятти, с. Тимофеевка, ул. Октябрьская, 148Е</a><br>
+            <a class="adres-ssylka" href="https://yandex.ru/maps/?text=Москва, улица Горбунова, 8 строение 2" target="_blank" rel="noopener">Москва, ул. Горбунова, 8, стр. 2</a>
+          </span>
+        </p>
+        <p style="margin:0 0 14px">
+          <a class="knopka knopka--prizrak knopka--karta" href="https://yandex.ru/maps/?rtext=~Самара, улица Пятигорская, 13 корпус 2&rtt=auto" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true" style="width:17px;height:17px"><path d="M12 21s-7-6.4-7-11a7 7 0 1 1 14 0c0 4.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            Показать на карте
+          </a>
         </p>
         <p class="podval__tel" style="margin:0 0 6px"><a href="tel:+79379999393">8 (937) 999-93-93</a></p>
         <p class="podval__tel" style="margin:0 0 12px"><a href="tel:+79379890988">8 (937) 989-09-88</a></p>
